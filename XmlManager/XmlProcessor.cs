@@ -55,11 +55,19 @@ namespace XmlManager {
 			string xml = ToXml(root);
 			File.AppendAllText(path, xml);
 		}
-		
-		public static string ToXml(IXmlWriteable root) {
-			return ToXml(root, 0);
-		}
 
+        public static string ToXml(IXmlWriteable root)
+        {
+            return ToXml(root, 0);
+        }
+        
+        public static string ToXml(IXmlWriteable root, bool indent)
+        {
+            if(indent)
+                return ToXml(root, 0);
+            
+            return ToXml(root, -1);
+        }
 		private static string ToXml(IXmlWriteable element, int indents) {
 			string elementname = element.XmlElementName();
 			string text = element.XmlText();
@@ -77,13 +85,13 @@ namespace XmlManager {
 			IXmlWriteable[] children = element.XmlChildren();
 			if (children != null && children.Length > 0) {
 				xml += EndElementOpen();
-				indents++;
+				if(indents >= 0) indents++;
 				foreach (IXmlWriteable c in children) {
 					if (c != null) {
-						xml += ToXml(c, indents);
+						    xml += ToXml(c, indents);
 					}
 				}
-				indents--;
+				if(indents >= 0) indents--;
 				xml += CloseTag(elementname, indents);
 			} else if (text != "") {
 				xml += AddText(text, elementname);
